@@ -1,0 +1,57 @@
+variables:
+    # Das Image aus welchen Branch soll mit `latest` getagt werden?
+    # Leer lassen, wenn der current branch der master branch sein soll
+    CURRENT_BRANCH: ""
+
+    # we need lower case!!!
+    CI_PROJECT_NAMESPACE: docker
+    
+    CONTAINER_TEST_IMAGE: docker.rz.tu-harburg.de:5000/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:$CI_PIPELINE_ID
+    CONTAINER_VERSIONED_IMAGE: docker.rz.tu-harburg.de:5000/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:$CI_COMMIT_REF_NAME
+    CONTAINER_RELEASE_IMAGE: docker.rz.tu-harburg.de:5000/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:latest
+
+stages:
+    - build
+    - deploy
+    
+docker_image:
+    stage: build
+    only:
+        - tags
+        - triggers        
+        - branches
+    tags:
+        - build
+    script:
+        # Nur, wenn es keinen CURRENT_BRANCH gibt oder wenn es einen gibt und es aber nicht der Master-Branch ist
+        - if [ -z ${CURRENT_BRANCH} ] || [ "${CI_COMMIT_REF_NAME}" != "master" ]; then sudo docker build --no-cache --pull -t "${CONTAINER_TEST_IMAGE}" .; fi
+    retry: 2
+
+# Deployment der Images `latest` 
+deploy:master:
+    stage: deploy
+    script:
+        - if [ -z ${CURRENT_BRANCH} ]; then sudo docker tag "${CONTAINER_TEST_IMAGE}" "${CONTAINER_RELEASE_IMAGE}"; fi
+        - if [ -z ${CURRENT_BRANCH} ]; then sudo docker push "${CONTAINER_RELEASE_IMAGE}"; fi
+    tags:
+        - deploy
+    only:
+        - master
+
+# Deployment der Images mit Versionstag und gegebenenfalls `latest`
+deploy:version:
+    stage: deploy
+    script:
+        - sudo docker tag "${CONTAINER_TEST_IMAGE}" "$CONTAINER_VERSIONED_IMAGE"
+        - if [ ! -z ${CURRENT_BRANCH} ] && [ "${CI_COMMIT_REF_NAME}" == "${CURRENT_BRANCH}" ]; then sudo docker tag "${CONTAINER_TEST_IMAGE}" "${CONTAINER_RELEASE_IMAGE}"; fi
+        - sudo docker push "${CONTAINER_VERSIONED_IMAGE}"
+        - if [ ! -z ${CURRENT_BRANCH} ] && [ "${CI_COMMIT_REF_NAME}" == "${CURRENT_BRANCH}" ]; then sudo docker push "${CONTAINER_RELEASE_IMAGE}"; fi
+    tags:
+        - deploy
+    only:
+        - branches
+        - /^v.*$/
+        - /^.*-release$/
+        - /^.*-stable$/
+    except:
+        - master
