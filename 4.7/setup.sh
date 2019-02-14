@@ -21,8 +21,7 @@ fi
 /usr/sbin/a2enconf remoteip
 /usr/sbin/a2enmod remoteip
 
-perl -i -pe 's/^(\s*LogFormat ")%h( %l %u %t \\"%r\\" %>s %O \\"%\{Referer\}i\\" \\"%\{User-Agent\}i\\"" combined)/\1%a\2/g' /etc/apache2/apache2.conf
-
+perl -pe 's/^(\s*LogFormat\s+.*)%h(.*)/\1%a\2/g' /etc/apache2/apache2.conf
 
 # Default .htaccess
 if [ ! -f "/var/www/html/.htaccess" ]; then
