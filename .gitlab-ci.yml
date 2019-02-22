@@ -88,7 +88,7 @@ deploy:branches:4.9:
         VERSION: '4.9'
         VARIANT: ''
     script: *deploy_branches_script_definition
-    
+
 build:5.0:
     stage: build
     retry: 2
@@ -138,5 +138,57 @@ deploy:branches:5.0:
         - master
     variables:
         VERSION: '5.0'
+        VARIANT: ''
+    script: *deploy_branches_script_definition
+
+build:5.1:
+    stage: build
+    retry: 2
+    only:
+        - master
+    tags:
+        - build
+    variables:
+        VERSION: '5.1'
+        VARIANT: ''
+    before_script: *build_before_script_definition
+    script: *build_script_definition
+
+deploy:5.1:
+    stage: deploy
+    tags:
+        - deploy
+    only:
+        - master
+    variables:
+        VERSION: '5.1'
+        VARIANT: ''
+    script: *deploy_script_definition
+
+build:branches:5.1:
+    stage: build
+    retry: 2
+    only:
+        - branches
+    except:
+        - master
+    tags:
+        - build
+    variables:
+        VERSION: '5.1'
+        VARIANT: ''
+    before_script: *build_branches_before_script_definition
+    script: *build_branches_script_definition
+
+deploy:branches:5.1:
+    stage: deploy
+    tags:
+        - deploy
+    only:
+        - branches
+    except:
+        - master
+    variables:
+        VERSION: '5.1'
         VARIANT: ''
     script: *deploy_branches_script_definition
