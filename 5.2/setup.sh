@@ -137,9 +137,9 @@ PHP
     if [ -d /var/www/html/${RELATIVE_PATH}/wp-content/plugins/tuhh-filter/.git ]; then git -C /var/www/html/${RELATIVE_PATH}/wp-content/plugins/tuhh-filter/ pull; else git clone https://collaborating.tuhh.de/open-source/wordpress-plugins/tuhh-filter.git /var/www/html/${RELATIVE_PATH}/wp-content/plugins/tuhh-filter/; fi
     su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate tuhh-filter --network" www-data
     
-    echo "!!!! quick'n'dirty hack !!!!"
-    echo "Logout für LDAP auf 24 Stunden"
-    sed -i 's/\$intExpireTime *= *.*/\$intExpireTime = 60 * 60 * 24;/' "/var/www/html/${RELATIVE_PATH}/wp-content/plugins/wpdirauth/wpDirAuth.php"
+    # echo "!!!! quick'n'dirty hack !!!!"
+    # echo "Logout für LDAP auf 24 Stunden"
+    # sed -i 's/\$intExpireTime *= *.*/\$intExpireTime = 60 * 60 * 24;/' "/var/www/html/${RELATIVE_PATH}/wp-content/plugins/wpdirauth/wpDirAuth.php"
 fi
 
 chown -Rf www-data.www-data /var/www/html/
