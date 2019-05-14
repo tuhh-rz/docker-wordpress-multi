@@ -23,8 +23,6 @@ fi
 
 perl -pe 's/^(\s*LogFormat\s+.*)%h(.*)/\1%a\2/g' /etc/apache2/apache2.conf
 
-
-
 # Limits: Default values
 export UPLOAD_MAX_FILESIZE=${UPLOAD_MAX_FILESIZE:-300M}
 export POST_MAX_SIZE=${POST_MAX_SIZE:-300M}
@@ -33,12 +31,10 @@ export MAX_FILE_UPLOADS=${MAX_FILE_UPLOADS:-20}
 export MAX_INPUT_VARS=${MAX_INPUT_VARS:-1000}
 export MEMORY_LIMIT=${MEMORY_LIMIT:-512M}
 
-
 export PATH_CURRENT_SITE=${PATH_CURRENT_SITE:-/}
 
 export DISABLE_WP_CRON=${DISABLE_WP_CRON:-true}
 export AUTOMATIC_UPDATER_DISABLED=${AUTOMATIC_UPDATER_DISABLED:-false}
-
 
 # Limits
 perl -i -pe 's/^(\s*;\s*)*upload_max_filesize.*/upload_max_filesize = $ENV{'UPLOAD_MAX_FILESIZE'}/g' /etc/php/7.2/apache2/php.ini
@@ -53,8 +49,6 @@ sed -i 's/<\/VirtualHost>/<Directory \/var\/www\/html>\nAllowOverride ALL\n<\/Di
 mkdir -p "/var/www/html/${RELATIVE_PATH}"
 rsync -rc /opt/wordpress/wordpress/* "/var/www/html/${RELATIVE_PATH}"
 chown -Rf www-data.www-data "/var/www/html/${RELATIVE_PATH}"
-
-rsync -avr /opt/wp-plugins/ "/var/www/html/${RELATIVE_PATH}/wp-content/plugins"
 
 # Default .htaccess
 if [ ! -f "/var/www/html/${RELATIVE_PATH}/.htaccess" ]; then
@@ -114,7 +108,6 @@ PHP
     su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install wpdirauth" www-data
     su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install shortcodes-ultimate" www-data
     su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install auto-submenu" www-data
-    # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install media-file-sizes" www-data
     su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install qtranslate-x" www-data
     su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install svg-support" www-data
     su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install wp-user-avatar" www-data
@@ -123,10 +116,6 @@ PHP
 
     su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate wpdirauth --network" www-data
     su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate shortcodes-ultimate --network" www-data
-    # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate auto-submenu --network" www-data
-    # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate media-file-sizes --network" www-data
-    # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate qtranslate-x --network" www-data
-    # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate wp-user-avatar --network" www-data
     su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate akismet --network" www-data
     # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate stops-core-theme-and-plugin-updates --network" www-data
 
