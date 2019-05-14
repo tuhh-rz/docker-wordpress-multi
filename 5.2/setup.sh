@@ -23,10 +23,7 @@ fi
 
 perl -pe 's/^(\s*LogFormat\s+.*)%h(.*)/\1%a\2/g' /etc/apache2/apache2.conf
 
-# Default .htaccess
-if [ ! -f "/var/www/html/.htaccess" ]; then
-    cp /opt/wordpress/htaccess /var/www/html/.htaccess
-fi
+
 
 # Limits: Default values
 export UPLOAD_MAX_FILESIZE=${UPLOAD_MAX_FILESIZE:-300M}
@@ -58,6 +55,13 @@ rsync -rc /opt/wordpress/wordpress/* "/var/www/html/${RELATIVE_PATH}"
 chown -Rf www-data.www-data "/var/www/html/${RELATIVE_PATH}"
 
 rsync -avr /opt/wp-plugins/ "/var/www/html/${RELATIVE_PATH}/wp-content/plugins"
+
+# Default .htaccess
+if [ ! -f "/var/www/html/${RELATIVE_PATH}/.htaccess" ]; then
+    cp /opt/htaccess /var/www/html/${RELATIVE_PATH}/.htaccess
+fi
+chmod 440 /var/www/html/${RELATIVE_PATH}/.htaccess
+perl -i -pe 's/^(RewriteBase\s+).*/\1$ENV{'PATH_CURRENT_SITE'}/g' /var/www/html/${RELATIVE_PATH}/.htaccess
 
 chown -Rf www-data.www-data /var/www/html/
 
