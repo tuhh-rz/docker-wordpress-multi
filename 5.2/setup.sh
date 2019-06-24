@@ -145,7 +145,7 @@ fi
 
 # consider a table prefix
 export TABLE_PREFIX=${TABLE_PREFIX:-wp_}
-perl -pe 's/^(\$table_prefix\s+=\s+).*/\1\x27$ENV{'TABLE_PREFIX'}\x27;/g' /var/www/html/${RELATIVE_PATH}/wp-config.php
+perl -i -pe 's/^(\$table_prefix\s+=\s+).*/\1\x27$ENV{'TABLE_PREFIX'}\x27;/g' /var/www/html/${RELATIVE_PATH}/wp-config.php
 
 chown -Rf www-data.www-data /var/www/html/
 
