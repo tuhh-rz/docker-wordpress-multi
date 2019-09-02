@@ -1,7 +1,7 @@
 variables:
     CONTAINER_RELEASE_IMAGE: docker.rz.tu-harburg.de:5000/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
-    LATEST_VERSION: '5.1'
-    MAPPING: '4:4.9,5:5.1'
+    LATEST_VERSION: '5.2'
+    MAPPING: '4:4.9,5:5.2'
 
 
 .build_script_template:
@@ -18,7 +18,7 @@ variables:
     script:  &deploy_script_definition
         - pwd
         - sudo docker push "${CONTAINER_RELEASE_IMAGE}":"${VERSION}${VARIANT:+-$VARIANT}"
-        - if [ ! -z ${LATEST_VERSION} ] && [ "${LATEST_VERSION}" == "${VERSION}${VARIANT:+-$VARIANT}" ]; then sudo docker tag "${CONTAINER_RELEASE_IMAGE}":"${VERSION}${VARIANT:+-$VARIANT}" "${CONTAINER_RELEASE_IMAGE}:latest"; sudo docker push "${CONTAINER_RELEASE_IMAGE}:latest"; fi
+        - if [ ! -z "${LATEST_VERSION}" ] && [ "${LATEST_VERSION}" == "${VERSION}${VARIANT:+-$VARIANT}" ]; then sudo docker tag "${CONTAINER_RELEASE_IMAGE}":"${VERSION}${VARIANT:+-$VARIANT}" "${CONTAINER_RELEASE_IMAGE}:latest"; sudo docker push "${CONTAINER_RELEASE_IMAGE}:latest"; fi
         - if [ ! -z "${MAPPING}" ]; then tag="$(perl -pe 's/.*(?:^|,)(.+):$ENV{VERSION}(?:$|,).*/$1/' <<<"${MAPPING}")"; if [ "${tag}" != "${MAPPING}" ]; then sudo docker tag "${CONTAINER_RELEASE_IMAGE}":"${VERSION}${VARIANT:+-$VARIANT}" "${CONTAINER_RELEASE_IMAGE}:${tag}"; sudo docker push "${CONTAINER_RELEASE_IMAGE}:${tag}"; fi; fi
 
 .build_branches_script_template:
@@ -55,6 +55,7 @@ build:4.9:
 
 deploy:4.9:
     stage: deploy
+    needs: ["build:4.9"]
     tags:
         - deploy
     only:
@@ -81,6 +82,7 @@ build:branches:4.9:
 
 deploy:branches:4.9:
     stage: deploy
+    needs: ["build:branches:4.9"]
     tags:
         - deploy
     only:
@@ -91,7 +93,7 @@ deploy:branches:4.9:
         VERSION: '4.9'
         VARIANT: ''
     script: *deploy_branches_script_definition
-
+    
 build:5.0:
     stage: build
     retry: 2
@@ -107,6 +109,7 @@ build:5.0:
 
 deploy:5.0:
     stage: deploy
+    needs: ["build:5.0"]
     tags:
         - deploy
     only:
@@ -133,6 +136,7 @@ build:branches:5.0:
 
 deploy:branches:5.0:
     stage: deploy
+    needs: ["build:branches:5.0"]
     tags:
         - deploy
     only:
@@ -159,6 +163,7 @@ build:5.1:
 
 deploy:5.1:
     stage: deploy
+    needs: ["build:5.1"]
     tags:
         - deploy
     only:
@@ -185,6 +190,7 @@ build:branches:5.1:
 
 deploy:branches:5.1:
     stage: deploy
+    needs: ["build:branches:5.1"]
     tags:
         - deploy
     only:
@@ -211,6 +217,7 @@ build:5.2:
 
 deploy:5.2:
     stage: deploy
+    needs: ["build:5.2"]
     tags:
         - deploy
     only:
@@ -237,6 +244,7 @@ build:branches:5.2:
 
 deploy:branches:5.2:
     stage: deploy
+    needs: ["build:branches:5.2"]
     tags:
         - deploy
     only:
@@ -247,3 +255,4 @@ deploy:branches:5.2:
         VERSION: '5.2'
         VARIANT: ''
     script: *deploy_branches_script_definition
+
