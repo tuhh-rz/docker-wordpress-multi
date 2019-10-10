@@ -34,7 +34,7 @@ export MEMORY_LIMIT=${MEMORY_LIMIT:-512M}
 export PATH_CURRENT_SITE=${PATH_CURRENT_SITE:-/}
 
 export DISABLE_WP_CRON=${DISABLE_WP_CRON:-true}
-export AUTOMATIC_UPDATER_DISABLED=${AUTOMATIC_UPDATER_DISABLED:-false}
+export AUTOMATIC_UPDATER_DISABLED=${AUTOMATIC_UPDATER_DISABLED:-true}
 
 # Limits
 perl -i -pe 's/^(\s*;\s*)*upload_max_filesize.*/upload_max_filesize = $ENV{'UPLOAD_MAX_FILESIZE'}/g' /etc/php/7.2/apache2/php.ini
