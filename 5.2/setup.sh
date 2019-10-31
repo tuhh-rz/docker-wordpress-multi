@@ -21,7 +21,7 @@ fi
 /usr/sbin/a2enconf remoteip
 /usr/sbin/a2enmod remoteip
 
-perl -pe 's/^(\s*LogFormat\s+.*)%h(.*)/\1%a\2/g' /etc/apache2/apache2.conf
+perl -i -pe 's/^(\s*LogFormat\s+.*)%h(.*)/\1%a\2/g' /etc/apache2/apache2.conf
 
 # Limits: Default values
 export UPLOAD_MAX_FILESIZE=${UPLOAD_MAX_FILESIZE:-300M}
@@ -33,7 +33,7 @@ export MEMORY_LIMIT=${MEMORY_LIMIT:-512M}
 
 export PATH_CURRENT_SITE=${PATH_CURRENT_SITE:-/}
 
-export DISABLE_WP_CRON=${DISABLE_WP_CRON:-true}
+export DISABLE_WP_CRON=${DISABLE_WP_CRON:-false}
 export AUTOMATIC_UPDATER_DISABLED=${AUTOMATIC_UPDATER_DISABLED:-true}
 
 # Limits
