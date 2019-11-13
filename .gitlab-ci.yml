@@ -1,258 +1,310 @@
 variables:
-    CONTAINER_RELEASE_IMAGE: docker.rz.tu-harburg.de:5000/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
-    LATEST_VERSION: '5.2'
-    MAPPING: '4:4.9,5:5.2'
-
+  CONTAINER_RELEASE_IMAGE: docker.rz.tu-harburg.de:5000/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
+  LATEST_VERSION: "5.3"
+  MAPPING: "4:4.9,5:5.3"
 
 .build_script_template:
-    script:  &build_script_definition
-        - pwd
-        - sudo docker build --no-cache --pull -t "${CONTAINER_RELEASE_IMAGE}":"${VERSION}${VARIANT:+-$VARIANT}" "${VERSION}"/"${VARIANT}"
+  script: &build_script_definition
+    - pwd
+    - sudo docker build --no-cache --pull -t "${CONTAINER_RELEASE_IMAGE}":"${VERSION}${VARIANT:+-$VARIANT}" "${VERSION}"/"${VARIANT}"
 
 .build_before_script_template:
-    before_script:  &build_before_script_definition
-        - pwd
-        - git submodule update --init --recursive
+  before_script: &build_before_script_definition
+    - pwd
+    - git submodule update --init --recursive
 
 .deploy_script_template:
-    script:  &deploy_script_definition
-        - pwd
-        - sudo docker push "${CONTAINER_RELEASE_IMAGE}":"${VERSION}${VARIANT:+-$VARIANT}"
-        - if [ ! -z "${LATEST_VERSION}" ] && [ "${LATEST_VERSION}" == "${VERSION}${VARIANT:+-$VARIANT}" ]; then sudo docker tag "${CONTAINER_RELEASE_IMAGE}":"${VERSION}${VARIANT:+-$VARIANT}" "${CONTAINER_RELEASE_IMAGE}:latest"; sudo docker push "${CONTAINER_RELEASE_IMAGE}:latest"; fi
-        - if [ ! -z "${MAPPING}" ]; then tag="$(perl -pe 's/.*(?:^|,)(.+):$ENV{VERSION}(?:$|,).*/$1/' <<<"${MAPPING}")"; if [ "${tag}" != "${MAPPING}" ]; then sudo docker tag "${CONTAINER_RELEASE_IMAGE}":"${VERSION}${VARIANT:+-$VARIANT}" "${CONTAINER_RELEASE_IMAGE}:${tag}"; sudo docker push "${CONTAINER_RELEASE_IMAGE}:${tag}"; fi; fi
+  script: &deploy_script_definition
+    - pwd
+    - sudo docker push "${CONTAINER_RELEASE_IMAGE}":"${VERSION}${VARIANT:+-$VARIANT}"
+    - if [ ! -z "${LATEST_VERSION}" ] && [ "${LATEST_VERSION}" == "${VERSION}${VARIANT:+-$VARIANT}" ]; then sudo docker tag "${CONTAINER_RELEASE_IMAGE}":"${VERSION}${VARIANT:+-$VARIANT}" "${CONTAINER_RELEASE_IMAGE}:latest"; sudo docker push "${CONTAINER_RELEASE_IMAGE}:latest"; fi
+    - if [ ! -z "${MAPPING}" ]; then tag="$(perl -pe 's/.*(?:^|,)(.+):$ENV{VERSION}(?:$|,).*/$1/' <<<"${MAPPING}")"; if [ "${tag}" != "${MAPPING}" ]; then sudo docker tag "${CONTAINER_RELEASE_IMAGE}":"${VERSION}${VARIANT:+-$VARIANT}" "${CONTAINER_RELEASE_IMAGE}:${tag}"; sudo docker push "${CONTAINER_RELEASE_IMAGE}:${tag}"; fi; fi
 
 .build_branches_script_template:
-    script:  &build_branches_script_definition
-        - pwd
-        - sudo docker build --pull -t "${CONTAINER_RELEASE_IMAGE}":"${VERSION}${VARIANT:+-$VARIANT}"_"${CI_COMMIT_REF_NAME}" "${VERSION}"/"${VARIANT}"
+  script: &build_branches_script_definition
+    - pwd
+    - sudo docker build --pull -t "${CONTAINER_RELEASE_IMAGE}":"${VERSION}${VARIANT:+-$VARIANT}"_"${CI_COMMIT_REF_NAME}" "${VERSION}"/"${VARIANT}"
 
 .build_branches_before_script_template:
-    before_script:  &build_branches_before_script_definition
-        - pwd
-        - git submodule update --init --recursive
+  before_script: &build_branches_before_script_definition
+    - pwd
+    - git submodule update --init --recursive
 
 .deploy_branches_script_template:
-    script:  &deploy_branches_script_definition
-        - pwd
-        - sudo docker push "${CONTAINER_RELEASE_IMAGE}":"${VERSION}${VARIANT:+-$VARIANT}"_"${CI_COMMIT_REF_NAME}"
+  script: &deploy_branches_script_definition
+    - pwd
+    - sudo docker push "${CONTAINER_RELEASE_IMAGE}":"${VERSION}${VARIANT:+-$VARIANT}"_"${CI_COMMIT_REF_NAME}"
 
 stages:
-    - build
-    - deploy
+  - build
+  - deploy
 
 build:4.9:
-    stage: build
-    retry: 2
-    only:
-        - master
-    tags:
-        - build
-    variables:
-        VERSION: '4.9'
-        VARIANT: ''
-    before_script: *build_before_script_definition
-    script: *build_script_definition
+  stage: build
+  retry: 2
+  only:
+    - master
+  tags:
+    - build
+  variables:
+    VERSION: "4.9"
+    VARIANT: ""
+  before_script: *build_before_script_definition
+  script: *build_script_definition
 
 deploy:4.9:
-    stage: deploy
-    needs: ["build:4.9"]
-    tags:
-        - deploy
-    only:
-        - master
-    variables:
-        VERSION: '4.9'
-        VARIANT: ''
-    script: *deploy_script_definition
+  stage: deploy
+  needs: ["build:4.9"]
+  tags:
+    - deploy
+  only:
+    - master
+  variables:
+    VERSION: "4.9"
+    VARIANT: ""
+  script: *deploy_script_definition
 
 build:branches:4.9:
-    stage: build
-    retry: 2
-    only:
-        - branches
-    except:
-        - master
-    tags:
-        - build
-    variables:
-        VERSION: '4.9'
-        VARIANT: ''
-    before_script: *build_branches_before_script_definition
-    script: *build_branches_script_definition
+  stage: build
+  retry: 2
+  only:
+    - branches
+  except:
+    - master
+  tags:
+    - build
+  variables:
+    VERSION: "4.9"
+    VARIANT: ""
+  before_script: *build_branches_before_script_definition
+  script: *build_branches_script_definition
 
 deploy:branches:4.9:
-    stage: deploy
-    needs: ["build:branches:4.9"]
-    tags:
-        - deploy
-    only:
-        - branches
-    except:
-        - master
-    variables:
-        VERSION: '4.9'
-        VARIANT: ''
-    script: *deploy_branches_script_definition
-    
+  stage: deploy
+  needs: ["build:branches:4.9"]
+  tags:
+    - deploy
+  only:
+    - branches
+  except:
+    - master
+  variables:
+    VERSION: "4.9"
+    VARIANT: ""
+  script: *deploy_branches_script_definition
+
 build:5.0:
-    stage: build
-    retry: 2
-    only:
-        - master
-    tags:
-        - build
-    variables:
-        VERSION: '5.0'
-        VARIANT: ''
-    before_script: *build_before_script_definition
-    script: *build_script_definition
+  stage: build
+  retry: 2
+  only:
+    - master
+  tags:
+    - build
+  variables:
+    VERSION: "5.0"
+    VARIANT: ""
+  before_script: *build_before_script_definition
+  script: *build_script_definition
 
 deploy:5.0:
-    stage: deploy
-    needs: ["build:5.0"]
-    tags:
-        - deploy
-    only:
-        - master
-    variables:
-        VERSION: '5.0'
-        VARIANT: ''
-    script: *deploy_script_definition
+  stage: deploy
+  needs: ["build:5.0"]
+  tags:
+    - deploy
+  only:
+    - master
+  variables:
+    VERSION: "5.0"
+    VARIANT: ""
+  script: *deploy_script_definition
 
 build:branches:5.0:
-    stage: build
-    retry: 2
-    only:
-        - branches
-    except:
-        - master
-    tags:
-        - build
-    variables:
-        VERSION: '5.0'
-        VARIANT: ''
-    before_script: *build_branches_before_script_definition
-    script: *build_branches_script_definition
+  stage: build
+  retry: 2
+  only:
+    - branches
+  except:
+    - master
+  tags:
+    - build
+  variables:
+    VERSION: "5.0"
+    VARIANT: ""
+  before_script: *build_branches_before_script_definition
+  script: *build_branches_script_definition
 
 deploy:branches:5.0:
-    stage: deploy
-    needs: ["build:branches:5.0"]
-    tags:
-        - deploy
-    only:
-        - branches
-    except:
-        - master
-    variables:
-        VERSION: '5.0'
-        VARIANT: ''
-    script: *deploy_branches_script_definition
+  stage: deploy
+  needs: ["build:branches:5.0"]
+  tags:
+    - deploy
+  only:
+    - branches
+  except:
+    - master
+  variables:
+    VERSION: "5.0"
+    VARIANT: ""
+  script: *deploy_branches_script_definition
 
 build:5.1:
-    stage: build
-    retry: 2
-    only:
-        - master
-    tags:
-        - build
-    variables:
-        VERSION: '5.1'
-        VARIANT: ''
-    before_script: *build_before_script_definition
-    script: *build_script_definition
+  stage: build
+  retry: 2
+  only:
+    - master
+  tags:
+    - build
+  variables:
+    VERSION: "5.1"
+    VARIANT: ""
+  before_script: *build_before_script_definition
+  script: *build_script_definition
 
 deploy:5.1:
-    stage: deploy
-    needs: ["build:5.1"]
-    tags:
-        - deploy
-    only:
-        - master
-    variables:
-        VERSION: '5.1'
-        VARIANT: ''
-    script: *deploy_script_definition
+  stage: deploy
+  needs: ["build:5.1"]
+  tags:
+    - deploy
+  only:
+    - master
+  variables:
+    VERSION: "5.1"
+    VARIANT: ""
+  script: *deploy_script_definition
 
 build:branches:5.1:
-    stage: build
-    retry: 2
-    only:
-        - branches
-    except:
-        - master
-    tags:
-        - build
-    variables:
-        VERSION: '5.1'
-        VARIANT: ''
-    before_script: *build_branches_before_script_definition
-    script: *build_branches_script_definition
+  stage: build
+  retry: 2
+  only:
+    - branches
+  except:
+    - master
+  tags:
+    - build
+  variables:
+    VERSION: "5.1"
+    VARIANT: ""
+  before_script: *build_branches_before_script_definition
+  script: *build_branches_script_definition
 
 deploy:branches:5.1:
-    stage: deploy
-    needs: ["build:branches:5.1"]
-    tags:
-        - deploy
-    only:
-        - branches
-    except:
-        - master
-    variables:
-        VERSION: '5.1'
-        VARIANT: ''
-    script: *deploy_branches_script_definition
+  stage: deploy
+  needs: ["build:branches:5.1"]
+  tags:
+    - deploy
+  only:
+    - branches
+  except:
+    - master
+  variables:
+    VERSION: "5.1"
+    VARIANT: ""
+  script: *deploy_branches_script_definition
 
 build:5.2:
-    stage: build
-    retry: 2
-    only:
-        - master
-    tags:
-        - build
-    variables:
-        VERSION: '5.2'
-        VARIANT: ''
-    before_script: *build_before_script_definition
-    script: *build_script_definition
+  stage: build
+  retry: 2
+  only:
+    - master
+  tags:
+    - build
+  variables:
+    VERSION: "5.2"
+    VARIANT: ""
+  before_script: *build_before_script_definition
+  script: *build_script_definition
 
 deploy:5.2:
-    stage: deploy
-    needs: ["build:5.2"]
-    tags:
-        - deploy
-    only:
-        - master
-    variables:
-        VERSION: '5.2'
-        VARIANT: ''
-    script: *deploy_script_definition
+  stage: deploy
+  needs: ["build:5.2"]
+  tags:
+    - deploy
+  only:
+    - master
+  variables:
+    VERSION: "5.2"
+    VARIANT: ""
+  script: *deploy_script_definition
 
 build:branches:5.2:
-    stage: build
-    retry: 2
-    only:
-        - branches
-    except:
-        - master
-    tags:
-        - build
-    variables:
-        VERSION: '5.2'
-        VARIANT: ''
-    before_script: *build_branches_before_script_definition
-    script: *build_branches_script_definition
+  stage: build
+  retry: 2
+  only:
+    - branches
+  except:
+    - master
+  tags:
+    - build
+  variables:
+    VERSION: "5.2"
+    VARIANT: ""
+  before_script: *build_branches_before_script_definition
+  script: *build_branches_script_definition
 
 deploy:branches:5.2:
-    stage: deploy
-    needs: ["build:branches:5.2"]
-    tags:
-        - deploy
-    only:
-        - branches
-    except:
-        - master
-    variables:
-        VERSION: '5.2'
-        VARIANT: ''
-    script: *deploy_branches_script_definition
+  stage: deploy
+  needs: ["build:branches:5.2"]
+  tags:
+    - deploy
+  only:
+    - branches
+  except:
+    - master
+  variables:
+    VERSION: "5.2"
+    VARIANT: ""
+  script: *deploy_branches_script_definition
 
+build:5.3:
+  stage: build
+  retry: 2
+  only:
+    - master
+  tags:
+    - build
+  variables:
+    VERSION: "5.3"
+    VARIANT: ""
+  before_script: *build_before_script_definition
+  script: *build_script_definition
+
+deploy:5.3:
+  stage: deploy
+  needs: ["build:5.3"]
+  tags:
+    - deploy
+  only:
+    - master
+  variables:
+    VERSION: "5.3"
+    VARIANT: ""
+  script: *deploy_script_definition
+
+build:branches:5.3:
+  stage: build
+  retry: 2
+  only:
+    - branches
+  except:
+    - master
+  tags:
+    - build
+  variables:
+    VERSION: "5.3"
+    VARIANT: ""
+  before_script: *build_branches_before_script_definition
+  script: *build_branches_script_definition
+
+deploy:branches:5.3:
+  stage: deploy
+  needs: ["build:branches:5.3"]
+  tags:
+    - deploy
+  only:
+    - branches
+  except:
+    - master
+  variables:
+    VERSION: "5.3"
+    VARIANT: ""
+  script: *deploy_branches_script_definition
