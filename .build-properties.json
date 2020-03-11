@@ -1,19 +1,29 @@
 {
-  "docker-tags": {
-    "4.9": {
-      "build-branch": "master"
-    },
-    "5.0": {
-      "build-branch": "master"
-    },
-    "5.1": {
-      "build-branch": "master"
-    },
-    "5.2": {
-      "build-branch": "master"
-    },
-    "5.3": {
-      "build-branch": "master"
+    "registries": [
+        {
+            "name": "collaborating.tuhh.de:5005",
+            "state": "absent"
+        },
+        {
+            "name": "docker.rz.tu-harburg.de:5000",
+            "state": "present"
+        }
+    ],
+    "docker-tags": {
+        "4.9": {
+            "build-branch": "master"
+        },
+        "5.0": {
+            "build-branch": "master"
+        },
+        "5.1": {
+            "build-branch": "master"
+        },
+        "5.2": {
+            "build-branch": "master"
+        },
+        "5.3": {
+            "build-branch": "master"
+        }
     }
-  }
 }
