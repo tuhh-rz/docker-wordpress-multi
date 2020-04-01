@@ -1,7 +1,7 @@
 variables:
   CONTAINER_RELEASE_IMAGE: docker.rz.tu-harburg.de:5000/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
-  LATEST_VERSION: "5.3"
-  MAPPING: "4:4.9,5:5.3"
+  LATEST_VERSION: "5.4"
+  MAPPING: "4:4.9,5:5.4"
 
 .build_script_template:
   script: &build_script_definition
@@ -308,3 +308,58 @@ deploy:branches:5.3:
     VERSION: "5.3"
     VARIANT: ""
   script: *deploy_branches_script_definition
+
+build:5.4:
+  stage: build
+  retry: 2
+  only:
+    - master
+  tags:
+    - build
+  variables:
+    VERSION: "5.4"
+    VARIANT: ""
+  before_script: *build_before_script_definition
+  script: *build_script_definition
+
+deploy:5.4:
+  stage: deploy
+  needs: ["build:5.4"]
+  tags:
+    - deploy
+  only:
+    - master
+  variables:
+    VERSION: "5.4"
+    VARIANT: ""
+  script: *deploy_script_definition
+
+build:branches:5.4:
+  stage: build
+  retry: 2
+  only:
+    - branches
+  except:
+    - master
+  tags:
+    - build
+  variables:
+    VERSION: "5.4"
+    VARIANT: ""
+  before_script: *build_branches_before_script_definition
+  script: *build_branches_script_definition
+
+deploy:branches:5.4:
+  stage: deploy
+  needs: ["build:branches:5.4"]
+  tags:
+    - deploy
+  only:
+    - branches
+  except:
+    - master
+  variables:
+    VERSION: "5.4"
+    VARIANT: ""
+  script: *deploy_branches_script_definition
+

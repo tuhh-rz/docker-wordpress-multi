@@ -25,6 +25,9 @@
         },
         "5.3": {
             "action": "build"
+        },
+        "5.4": {
+            "action": "build"
         }
     }
 }
