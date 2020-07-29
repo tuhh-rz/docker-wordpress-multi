@@ -1,7 +1,5 @@
 #!/bin/bash
 
-chown -Rf www-data.www-data /var/www/html/
-
 if [[ ${ENABLE_SSL} == "true" ]]; then
     sed -i '/SSLCertificateFile/d' /etc/apache2/sites-available/default-ssl.conf
     sed -i '/SSLCertificateKeyFile/d' /etc/apache2/sites-available/default-ssl.conf
@@ -47,17 +45,15 @@ perl -i -pe 's/^(\s*;\s*)*memory_limit.*/memory_limit = $ENV{'MEMORY_LIMIT'}/g' 
 sed -i 's/<\/VirtualHost>/<Directory \/var\/www\/html>\nAllowOverride ALL\n<\/Directory>\n<\/VirtualHost>/' /etc/apache2/sites-available/000-default.conf
 
 mkdir -p "/var/www/html/${RELATIVE_PATH}"
-rsync -rc /opt/wordpress/wordpress/* "/var/www/html/${RELATIVE_PATH}"
-chown -Rf www-data.www-data "/var/www/html/${RELATIVE_PATH}"
+rsync -au /opt/wordpress/ "/var/www/html/${RELATIVE_PATH}"
 
 # Default .htaccess
 if [ ! -f "/var/www/html/${RELATIVE_PATH}/.htaccess" ]; then
     cp /opt/htaccess /var/www/html/${RELATIVE_PATH}/.htaccess
 fi
-chmod 440 /var/www/html/${RELATIVE_PATH}/.htaccess
 perl -i -pe 's/^(RewriteBase\s+).*/\1$ENV{'PATH_CURRENT_SITE'}/g' /var/www/html/${RELATIVE_PATH}/.htaccess
 
-chown -Rf www-data.www-data /var/www/html/
+find /var/www/html/ ! -user www-data -exec chown www-data: {} +
 
 if [ -e "/usr/local/bin/wp" ]; then
     # wp-config.php anlegen
@@ -147,9 +143,9 @@ fi
 export TABLE_PREFIX=${TABLE_PREFIX:-wp_}
 perl -i -pe 's/^(\$table_prefix\s+=\s+).*/\1\x27$ENV{'TABLE_PREFIX'}\x27;/g' /var/www/html/${RELATIVE_PATH}/wp-config.php
 
-chown -Rf www-data.www-data /var/www/html/
-
 find /var/www/html -type f -print0 | xargs -0 chmod 660
 find /var/www/html -type d -print0 | xargs -0 chmod 770
+
+chmod 440 /var/www/html/${RELATIVE_PATH}/.htaccess
 
 exec /usr/bin/supervisord -nc /etc/supervisord.conf
