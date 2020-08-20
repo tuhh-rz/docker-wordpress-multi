@@ -1,42 +1,44 @@
 {
-  "active": true,
-  "version-check": {
     "active": true,
-    "master_key": "WordPress",
-    "sub_key": "WordPress",
-    "version_digits_in_key": 2
-  },
-  "registries": [
-    {
-      "name": "collaborating.tuhh.de:5005",
-      "state": "ignore"
+    "version-check": {
+        "active": true,
+        "master_key": "WordPress",
+        "sub_key": "WordPress",
+        "version_digits_in_key": 2
     },
-    {
-      "name": "docker.rz.tu-harburg.de:5000",
-      "state": "present"
+    "registries": [{
+            "name": "collaborating.tuhh.de:5005",
+            "state": "ignore"
+        },
+        {
+            "name": "docker.rz.tu-harburg.de:5000",
+            "state": "present"
+        }
+    ],
+    "image-tags": {
+        "4.9": {
+            "action": "build"
+        },
+        "5.0": {
+            "action": "build"
+        },
+        "5.1": {
+            "action": "build"
+        },
+        "5.2": {
+            "action": "build"
+        },
+        "5.3": {
+            "action": "build"
+        },
+        "5.4": {
+            "action": "build"
+        },
+        "5.5": {
+            "action": "build"
+        }
+    },
+    "upgrade-check": {
+        "active": true
     }
-  ],
-  "image-tags": {
-    "4.9": {
-      "action": "build"
-    },
-    "5.0": {
-      "action": "build"
-    },
-    "5.1": {
-      "action": "build"
-    },
-    "5.2": {
-      "action": "build"
-    },
-    "5.3": {
-      "action": "build"
-    },
-    "5.4": {
-      "action": "build"
-    }
-  },
-  "upgrade-check": {
-    "active": true
-  }
 }
