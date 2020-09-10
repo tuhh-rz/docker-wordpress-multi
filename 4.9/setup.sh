@@ -4,11 +4,11 @@ if [[ ${ENABLE_SSL} == "true" ]]; then
     sed -i '/SSLCertificateFile/d' /etc/apache2/sites-available/default-ssl.conf
     sed -i '/SSLCertificateKeyFile/d' /etc/apache2/sites-available/default-ssl.conf
     sed -i '/SSLCertificateChainFile/d' /etc/apache2/sites-available/default-ssl.conf
-    
+
     sed -i 's/SSLEngine.*/SSLEngine on\nSSLCertificateFile \/etc\/apache2\/ssl\/cert.pem\nSSLCertificateKeyFile \/etc\/apache2\/ssl\/private_key.pem\nSSLCertificateChainFile \/etc\/apache2\/ssl\/cert-chain.pem/' /etc/apache2/sites-available/default-ssl.conf
 
     ln -s /etc/apache2/sites-available/default-ssl.conf /etc/apache2/sites-enabled/
-    
+
     /usr/sbin/a2enmod ssl
 else
     /usr/sbin/a2dismod ssl
@@ -34,12 +34,10 @@ export MAX_FILE_UPLOADS=${MAX_FILE_UPLOADS:-20}
 export MAX_INPUT_VARS=${MAX_INPUT_VARS:-1000}
 export MEMORY_LIMIT=${MEMORY_LIMIT:-512M}
 
-
 export PATH_CURRENT_SITE=${PATH_CURRENT_SITE:-/}
 
 export DISABLE_WP_CRON=${DISABLE_WP_CRON:-false}
 export AUTOMATIC_UPDATER_DISABLED=${AUTOMATIC_UPDATER_DISABLED:-true}
-
 
 # Limits
 perl -i -pe 's/^(\s*;\s*)*upload_max_filesize.*/upload_max_filesize = $ENV{'UPLOAD_MAX_FILESIZE'}/g' /etc/php/7.0/apache2/php.ini
@@ -60,7 +58,7 @@ find /var/www/html/ ! -user www-data -exec chown www-data: {} +
 if [ -e "/usr/local/bin/wp" ]; then
     # wp-config.php anlegen
     if [ -z "${DBNAME+x}" ] || [ -z "${DBUSER+x}" ] || [ -z "${DBPASS+x}" ] || [ -z "${DBHOST+x}" ] || [ -z "${DBPREFIX+x}" ] || [ -z "${INITIAL_URL+x}" ] || [ -z "${SMTP_HOST+x}" ] || [ -z "${SMTP_PORT+x}" ] || [ -z "${SMTP_SMTP_AUTH+x}" ] || [ -z "${SMTP_USER_NAME+x}" ] || [ -z "${SMTP_PASSWORD+x}" ] || [ -z "${SMTP_FROM+x}" ] || [ -z "${SMTP_FROM_NAME+x}" ] || [ -z "${SMTP_SENDER+x}" ] || [ -z "${DOMAIN_CURRENT_SITE+x}" ]; then
-         echo 'WARNING: skipping `wp config create`: One or more environment variables not defined: DBNAME, DBUSER, DBPASS, DBHOST, DBPREFIX, INITIAL_URL, SMTP_HOST, SMTP_PORT, SMTP_SMTP_AUTH, SMTP_USER_NAME, SMTP_PASSWORD, SMTP_FROM, SMTP_FROM_NAME, SMTP_SENDER, DOMAIN_CURRENT_SITE'
+        echo 'WARNING: skipping `wp config create`: One or more environment variables not defined: DBNAME, DBUSER, DBPASS, DBHOST, DBPREFIX, INITIAL_URL, SMTP_HOST, SMTP_PORT, SMTP_SMTP_AUTH, SMTP_USER_NAME, SMTP_PASSWORD, SMTP_FROM, SMTP_FROM_NAME, SMTP_SENDER, DOMAIN_CURRENT_SITE'
     else
         su -s /bin/bash -c "/usr/local/bin/wp --path=/var/www/html/${RELATIVE_PATH} config create --dbname='${DBNAME}' --dbuser='${DBUSER}' --dbpass='${DBPASS}' --dbhost='${DBHOST}' --dbprefix='${DBPREFIX}' --skip-check --force --extra-php <<PHP
 define('WP_ALLOW_MULTISITE', true);
@@ -107,7 +105,7 @@ PHP
     su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install shortcodes-ultimate" www-data
     su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install auto-submenu" www-data
     # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install media-file-sizes" www-data
-    su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install qtranslate-x" www-data
+    # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install qtranslate-x" www-data
     su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install svg-support" www-data
     su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install wp-user-avatar" www-data
     su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install akismet" www-data
@@ -128,7 +126,7 @@ PHP
 
     if [ -d /var/www/html/${RELATIVE_PATH}/wp-content/plugins/tuhh-filter/.git ]; then git -C /var/www/html/${RELATIVE_PATH}/wp-content/plugins/tuhh-filter/ pull; else git clone https://collaborating.tuhh.de/open-source/wordpress-plugins/tuhh-filter.git /var/www/html/${RELATIVE_PATH}/wp-content/plugins/tuhh-filter/; fi
     su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate tuhh-filter --network" www-data
-    
+
     echo "!!!! quick'n'dirty hack !!!!"
     echo "Logout für LDAP auf 24 Stunden"
     sed -i 's/\$intExpireTime *= *.*/\$intExpireTime = 60 * 60 * 24;/' "/var/www/html/${RELATIVE_PATH}/wp-content/plugins/wpdirauth/wpDirAuth.php"
