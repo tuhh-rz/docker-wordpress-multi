@@ -49,16 +49,16 @@ rsync -au /opt/wordpress/ "/var/www/html/${RELATIVE_PATH}"
 
 # Default .htaccess
 if [ ! -f "/var/www/html/${RELATIVE_PATH}/.htaccess" ]; then
-  cp /opt/htaccess /var/www/html/${RELATIVE_PATH}/.htaccess
+  cp /opt/htaccess "/var/www/html/${RELATIVE_PATH}/.htaccess"
 fi
-perl -i -pe 's/^(RewriteBase\s+).*/\1$ENV{'PATH_CURRENT_SITE'}/g' /var/www/html/${RELATIVE_PATH}/.htaccess
+perl -i -pe 's/^(RewriteBase\s+).*/\1$ENV{'PATH_CURRENT_SITE'}/g' "/var/www/html/${RELATIVE_PATH}/.htaccess"
 
 find /var/www/html/ ! -user www-data -exec chown www-data: {} +
 
 if [ -e "/usr/local/bin/wp" ]; then
   # wp-config.php anlegen
   if [ -z "${DBNAME+x}" ] || [ -z "${DBUSER+x}" ] || [ -z "${DBPASS+x}" ] || [ -z "${DBHOST+x}" ] || [ -z "${DBPREFIX+x}" ] || [ -z "${INITIAL_URL+x}" ] || [ -z "${SMTP_HOST+x}" ] || [ -z "${SMTP_PORT+x}" ] || [ -z "${SMTP_SMTP_AUTH+x}" ] || [ -z "${SMTP_USER_NAME+x}" ] || [ -z "${SMTP_PASSWORD+x}" ] || [ -z "${SMTP_FROM+x}" ] || [ -z "${SMTP_FROM_NAME+x}" ] || [ -z "${SMTP_SENDER+x}" ] || [ -z "${DOMAIN_CURRENT_SITE+x}" ]; then
-    echo 'WARNING: skipping `wp config create`: One or more environment variables not defined: DBNAME, DBUSER, DBPASS, DBHOST, DBPREFIX, INITIAL_URL, SMTP_HOST, SMTP_PORT, SMTP_SMTP_AUTH, SMTP_USER_NAME, SMTP_PASSWORD, SMTP_FROM, SMTP_FROM_NAME, SMTP_SENDER, DOMAIN_CURRENT_SITE'
+    echo WARNING: skipping 'wp config create': One or more environment variables not defined: DBNAME, DBUSER, DBPASS, DBHOST, DBPREFIX, INITIAL_URL, SMTP_HOST, SMTP_PORT, SMTP_SMTP_AUTH, SMTP_USER_NAME, SMTP_PASSWORD, SMTP_FROM, SMTP_FROM_NAME, SMTP_SENDER, DOMAIN_CURRENT_SITE
   else
     su -s /bin/bash -c "/usr/local/bin/wp --path=/var/www/html/${RELATIVE_PATH} config create --dbname='${DBNAME}' --dbuser='${DBUSER}' --dbpass='${DBPASS}' --dbhost='${DBHOST}' --dbprefix='${DBPREFIX}' --skip-check --force --extra-php <<PHP
 define('WP_ALLOW_MULTISITE', true);
@@ -90,7 +90,7 @@ PHP
   if [ -n "${INITIAL_TITLE}" ] && [ -n "${INITIAL_URL}" ] && [ -n "${INITIAL_ADMIN_USER}" ] && [ -n "${INITIAL_ADMIN_PASSWORD}" ] && [ -n "${INITIAL_ADMIN_EMAIL}" ]; then
     su -s /bin/bash -c "/usr/local/bin/wp --path=/var/www/html/${RELATIVE_PATH} core multisite-install --title='${INITIAL_TITLE}' --url='${INITIAL_URL}' --base='${RELATIVE_PATH}' --admin_user='${INITIAL_ADMIN_USER}' --admin_password='${INITIAL_ADMIN_PASSWORD}' --admin_email='${INITIAL_ADMIN_EMAIL}' --skip-email" www-data
   else
-    echo 'WARNING: skipping `wp core multisite-install`: One or more environment variables not defined: INITIAL_TITLE, INITIAL_URL, INITIAL_ADMIN_USER, INITIAL_ADMIN_PASSWORD, INITIAL_ADMIN_EMAIL'
+    echo WARNING: skipping 'wp core multisite-install': One or more environment variables not defined: INITIAL_TITLE, INITIAL_URL, INITIAL_ADMIN_USER, INITIAL_ADMIN_PASSWORD, INITIAL_ADMIN_EMAIL
   fi
 
   # Mitgelieferte Plugins sofort aktualisieren
@@ -120,17 +120,17 @@ PHP
 
   #su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin delete akismet" www-data
 
-  if [ -d /var/www/html/${RELATIVE_PATH}/wp-content/plugins/tuhh-filter/.git ]; then
-    git -C /var/www/html/${RELATIVE_PATH}/wp-content/plugins/tuhh-filter/ pull
+  if [ -d "/var/www/html/${RELATIVE_PATH}/wp-content/plugins/tuhh-filter/.git" ]; then
+    git -C "/var/www/html/${RELATIVE_PATH}/wp-content/plugins/tuhh-filter/" pull
   else
-    git clone https://collaborating.tuhh.de/open-source/wordpress-plugins/tuhh-filter.git /var/www/html/${RELATIVE_PATH}/wp-content/plugins/tuhh-filter/
+    git clone https://collaborating.tuhh.de/open-source/wordpress-plugins/tuhh-filter.git "/var/www/html/${RELATIVE_PATH}/wp-content/plugins/tuhh-filter/"
   fi
   # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate tuhh-filter --network" www-data
 
-  if [ -d /var/www/html/${RELATIVE_PATH}/wp-content/plugins/bst-smtp/.git ]; then
-    git -C /var/www/html/${RELATIVE_PATH}/wp-content/plugins/bst-smtp/ pull
+  if [ -d "/var/www/html/${RELATIVE_PATH}/wp-content/plugins/bst-smtp/.git" ]; then
+    git -C "/var/www/html/${RELATIVE_PATH}/wp-content/plugins/bst-smtp/" pull
   else
-    git clone https://collaborating.tuhh.de/open-source/wordpress-plugins/bst-smtp.git /var/www/html/${RELATIVE_PATH}/wp-content/plugins/bst-smtp/
+    git clone https://collaborating.tuhh.de/open-source/wordpress-plugins/bst-smtp.git "/var/www/html/${RELATIVE_PATH}/wp-content/plugins/bst-smtp/"
   fi
   su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate bst-smtp --network" www-data
 
@@ -141,11 +141,11 @@ fi
 
 # consider a table prefix
 export TABLE_PREFIX=${TABLE_PREFIX:-wp_}
-perl -i -pe 's/^(\$table_prefix\s+=\s+).*/\1\x27$ENV{'TABLE_PREFIX'}\x27;/g' /var/www/html/${RELATIVE_PATH}/wp-config.php
+perl -i -pe 's/^(\$table_prefix\s+=\s+).*/\1\x27$ENV{'TABLE_PREFIX'}\x27;/g' "/var/www/html/${RELATIVE_PATH}/wp-config.php"
 
 find /var/www/html -type f -print0 | xargs -0 chmod 660
 find /var/www/html -type d -print0 | xargs -0 chmod 770
 
-chmod 440 /var/www/html/${RELATIVE_PATH}/.htaccess
+chmod 440 "/var/www/html/${RELATIVE_PATH}/.htaccess"
 
 exec /usr/bin/supervisord -nc /etc/supervisord.conf
