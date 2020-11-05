@@ -1,18 +1,18 @@
 #!/bin/bash
 
 if [[ ${ENABLE_SSL} == "true" ]]; then
-    sed -i '/SSLCertificateFile/d' /etc/apache2/sites-available/default-ssl.conf
-    sed -i '/SSLCertificateKeyFile/d' /etc/apache2/sites-available/default-ssl.conf
-    sed -i '/SSLCertificateChainFile/d' /etc/apache2/sites-available/default-ssl.conf
+  sed -i '/SSLCertificateFile/d' /etc/apache2/sites-available/default-ssl.conf
+  sed -i '/SSLCertificateKeyFile/d' /etc/apache2/sites-available/default-ssl.conf
+  sed -i '/SSLCertificateChainFile/d' /etc/apache2/sites-available/default-ssl.conf
 
-    sed -i 's/SSLEngine.*/SSLEngine on\nSSLCertificateFile \/etc\/apache2\/ssl\/cert.pem\nSSLCertificateKeyFile \/etc\/apache2\/ssl\/private_key.pem\nSSLCertificateChainFile \/etc\/apache2\/ssl\/cert-chain.pem/' /etc/apache2/sites-available/default-ssl.conf
+  sed -i 's/SSLEngine.*/SSLEngine on\nSSLCertificateFile \/etc\/apache2\/ssl\/cert.pem\nSSLCertificateKeyFile \/etc\/apache2\/ssl\/private_key.pem\nSSLCertificateChainFile \/etc\/apache2\/ssl\/cert-chain.pem/' /etc/apache2/sites-available/default-ssl.conf
 
-    ln -s /etc/apache2/sites-available/default-ssl.conf /etc/apache2/sites-enabled/
+  ln -s /etc/apache2/sites-available/default-ssl.conf /etc/apache2/sites-enabled/
 
-    /usr/sbin/a2enmod ssl
+  /usr/sbin/a2enmod ssl
 else
-    /usr/sbin/a2dismod ssl
-    rm /etc/apache2/sites-enabled/default-ssl.conf
+  /usr/sbin/a2dismod ssl
+  rm /etc/apache2/sites-enabled/default-ssl.conf
 fi
 /usr/sbin/a2enmod rewrite
 
@@ -23,7 +23,7 @@ perl -i -pe 's/^(\s*LogFormat\s+.*)%h(.*)/\1%a\2/g' /etc/apache2/apache2.conf
 
 # Default .htaccess
 if [ ! -f "/var/www/html/.htaccess" ]; then
-    cp /opt/wordpress/htaccess /var/www/html/.htaccess
+  cp /opt/wordpress/htaccess /var/www/html/.htaccess
 fi
 
 # Limits: Default values
@@ -56,11 +56,11 @@ rsync -au /opt/wp-plugins/ "/var/www/html/${RELATIVE_PATH}/wp-content/plugins"
 find /var/www/html/ ! -user www-data -exec chown www-data: {} +
 
 if [ -e "/usr/local/bin/wp" ]; then
-    # wp-config.php anlegen
-    if [ -z "${DBNAME+x}" ] || [ -z "${DBUSER+x}" ] || [ -z "${DBPASS+x}" ] || [ -z "${DBHOST+x}" ] || [ -z "${DBPREFIX+x}" ] || [ -z "${INITIAL_URL+x}" ] || [ -z "${SMTP_HOST+x}" ] || [ -z "${SMTP_PORT+x}" ] || [ -z "${SMTP_SMTP_AUTH+x}" ] || [ -z "${SMTP_USER_NAME+x}" ] || [ -z "${SMTP_PASSWORD+x}" ] || [ -z "${SMTP_FROM+x}" ] || [ -z "${SMTP_FROM_NAME+x}" ] || [ -z "${SMTP_SENDER+x}" ] || [ -z "${DOMAIN_CURRENT_SITE+x}" ]; then
-        echo 'WARNING: skipping `wp config create`: One or more environment variables not defined: DBNAME, DBUSER, DBPASS, DBHOST, DBPREFIX, INITIAL_URL, SMTP_HOST, SMTP_PORT, SMTP_SMTP_AUTH, SMTP_USER_NAME, SMTP_PASSWORD, SMTP_FROM, SMTP_FROM_NAME, SMTP_SENDER, DOMAIN_CURRENT_SITE'
-    else
-        su -s /bin/bash -c "/usr/local/bin/wp --path=/var/www/html/${RELATIVE_PATH} config create --dbname='${DBNAME}' --dbuser='${DBUSER}' --dbpass='${DBPASS}' --dbhost='${DBHOST}' --dbprefix='${DBPREFIX}' --skip-check --force --extra-php <<PHP
+  # wp-config.php anlegen
+  if [ -z "${DBNAME+x}" ] || [ -z "${DBUSER+x}" ] || [ -z "${DBPASS+x}" ] || [ -z "${DBHOST+x}" ] || [ -z "${DBPREFIX+x}" ] || [ -z "${INITIAL_URL+x}" ] || [ -z "${SMTP_HOST+x}" ] || [ -z "${SMTP_PORT+x}" ] || [ -z "${SMTP_SMTP_AUTH+x}" ] || [ -z "${SMTP_USER_NAME+x}" ] || [ -z "${SMTP_PASSWORD+x}" ] || [ -z "${SMTP_FROM+x}" ] || [ -z "${SMTP_FROM_NAME+x}" ] || [ -z "${SMTP_SENDER+x}" ] || [ -z "${DOMAIN_CURRENT_SITE+x}" ]; then
+    echo 'WARNING: skipping `wp config create`: One or more environment variables not defined: DBNAME, DBUSER, DBPASS, DBHOST, DBPREFIX, INITIAL_URL, SMTP_HOST, SMTP_PORT, SMTP_SMTP_AUTH, SMTP_USER_NAME, SMTP_PASSWORD, SMTP_FROM, SMTP_FROM_NAME, SMTP_SENDER, DOMAIN_CURRENT_SITE'
+  else
+    su -s /bin/bash -c "/usr/local/bin/wp --path=/var/www/html/${RELATIVE_PATH} config create --dbname='${DBNAME}' --dbuser='${DBUSER}' --dbpass='${DBPASS}' --dbhost='${DBHOST}' --dbprefix='${DBPREFIX}' --skip-check --force --extra-php <<PHP
 define('WP_ALLOW_MULTISITE', true);
 define('MULTISITE', true);
 define('SUBDOMAIN_INSTALL', false);
@@ -84,52 +84,52 @@ define('AUTOMATIC_UPDATER_DISABLED', ${AUTOMATIC_UPDATER_DISABLED});
 define('DISABLE_WP_CRON', ${DISABLE_WP_CRON});
 PHP
 " www-data
-    fi
+  fi
 
-    # WP initialisieren
-    if [ -n "${INITIAL_TITLE}" ] && [ -n "${INITIAL_URL}" ] && [ -n "${INITIAL_ADMIN_USER}" ] && [ -n "${INITIAL_ADMIN_PASSWORD}" ] && [ -n "${INITIAL_ADMIN_EMAIL}" ]; then
-        su -s /bin/bash -c "/usr/local/bin/wp --path=/var/www/html/${RELATIVE_PATH} core multisite-install --title='${INITIAL_TITLE}' --url='${INITIAL_URL}' --base='${RELATIVE_PATH}' --admin_user='${INITIAL_ADMIN_USER}' --admin_password='${INITIAL_ADMIN_PASSWORD}' --admin_email='${INITIAL_ADMIN_EMAIL}' --skip-email" www-data
-    else
-        echo 'WARNING: skipping `wp core multisite-install`: One or more environment variables not defined: INITIAL_TITLE, INITIAL_URL, INITIAL_ADMIN_USER, INITIAL_ADMIN_PASSWORD, INITIAL_ADMIN_EMAIL'
-    fi
+  # WP initialisieren
+  if [ -n "${INITIAL_TITLE}" ] && [ -n "${INITIAL_URL}" ] && [ -n "${INITIAL_ADMIN_USER}" ] && [ -n "${INITIAL_ADMIN_PASSWORD}" ] && [ -n "${INITIAL_ADMIN_EMAIL}" ]; then
+    su -s /bin/bash -c "/usr/local/bin/wp --path=/var/www/html/${RELATIVE_PATH} core multisite-install --title='${INITIAL_TITLE}' --url='${INITIAL_URL}' --base='${RELATIVE_PATH}' --admin_user='${INITIAL_ADMIN_USER}' --admin_password='${INITIAL_ADMIN_PASSWORD}' --admin_email='${INITIAL_ADMIN_EMAIL}' --skip-email" www-data
+  else
+    echo 'WARNING: skipping `wp core multisite-install`: One or more environment variables not defined: INITIAL_TITLE, INITIAL_URL, INITIAL_ADMIN_USER, INITIAL_ADMIN_PASSWORD, INITIAL_ADMIN_EMAIL'
+  fi
 
-    # Mitgelieferte Plugins sofort aktualisieren
-    #su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin update --all" www-data
+  # Mitgelieferte Plugins sofort aktualisieren
+  #su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin update --all" www-data
 
-    # Updates the active translation of core, plugins, and themes.
-    #su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' core language update" www-data
-    #su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' theme update --all" www-data
+  # Updates the active translation of core, plugins, and themes.
+  #su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' core language update" www-data
+  #su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' theme update --all" www-data
 
-    # WordPress Plugins
-    su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install wpdirauth" www-data
-    su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install shortcodes-ultimate" www-data
-    su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install auto-submenu" www-data
-    # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install media-file-sizes" www-data
-    # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install qtranslate-x" www-data
-    su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install svg-support" www-data
-    su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install wp-user-avatar" www-data
-    su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install akismet" www-data
-    # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install stops-core-theme-and-plugin-updates" www-data
+  # WordPress Plugins
+  su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install wpdirauth" www-data
+  su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install shortcodes-ultimate" www-data
+  su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install auto-submenu" www-data
+  # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install media-file-sizes" www-data
+  # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install qtranslate-x" www-data
+  su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install svg-support" www-data
+  su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install wp-user-avatar" www-data
+  su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install akismet" www-data
+  # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install stops-core-theme-and-plugin-updates" www-data
 
-    su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate wpdirauth --network" www-data
-    su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate shortcodes-ultimate --network" www-data
-    # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate auto-submenu --network" www-data
-    # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate media-file-sizes --network" www-data
-    # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate qtranslate-x --network" www-data
-    su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate bst-smtp --network" www-data
-    # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate wp-user-avatar --network" www-data
-    su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate akismet --network" www-data
-    # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate stops-core-theme-and-plugin-updates --network" www-data
+  su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate wpdirauth --network" www-data
+  su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate shortcodes-ultimate --network" www-data
+  # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate auto-submenu --network" www-data
+  # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate media-file-sizes --network" www-data
+  # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate qtranslate-x --network" www-data
+  su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate bst-smtp --network" www-data
+  # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate wp-user-avatar --network" www-data
+  su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate akismet --network" www-data
+  # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate stops-core-theme-and-plugin-updates --network" www-data
 
-    su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin delete hello" www-data
-    #su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin delete akismet" www-data
+  su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin delete hello" www-data
+  #su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin delete akismet" www-data
 
-    if [ -d /var/www/html/${RELATIVE_PATH}/wp-content/plugins/tuhh-filter/.git ]; then git -C /var/www/html/${RELATIVE_PATH}/wp-content/plugins/tuhh-filter/ pull; else git clone https://collaborating.tuhh.de/open-source/wordpress-plugins/tuhh-filter.git /var/www/html/${RELATIVE_PATH}/wp-content/plugins/tuhh-filter/; fi
-    su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate tuhh-filter --network" www-data
+  if [ -d /var/www/html/${RELATIVE_PATH}/wp-content/plugins/tuhh-filter/.git ]; then git -C /var/www/html/${RELATIVE_PATH}/wp-content/plugins/tuhh-filter/ pull; else git clone https://collaborating.tuhh.de/open-source/wordpress-plugins/tuhh-filter.git /var/www/html/${RELATIVE_PATH}/wp-content/plugins/tuhh-filter/; fi
+  # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate tuhh-filter --network" www-data
 
-    echo "!!!! quick'n'dirty hack !!!!"
-    echo "Logout für LDAP auf 24 Stunden"
-    sed -i 's/\$intExpireTime *= *.*/\$intExpireTime = 60 * 60 * 24;/' "/var/www/html/${RELATIVE_PATH}/wp-content/plugins/wpdirauth/wpDirAuth.php"
+  echo "!!!! quick'n'dirty hack !!!!"
+  echo "Logout für LDAP auf 24 Stunden"
+  sed -i 's/\$intExpireTime *= *.*/\$intExpireTime = 60 * 60 * 24;/' "/var/www/html/${RELATIVE_PATH}/wp-content/plugins/wpdirauth/wpDirAuth.php"
 fi
 
 find /var/www/html -type f -print0 | xargs -0 chmod 660
