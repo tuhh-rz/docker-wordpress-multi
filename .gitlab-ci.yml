@@ -1,5 +1,5 @@
 variables:
-    CONTAINER_RELEASE_IMAGE: docker.rz.tu-harburg.de:5000/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
+    CONTAINER_RELEASE_IMAGE: docker.rz.tu-harburg.de/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
     LATEST_VERSION: "5.5"
     MAPPING: "4:4.9,5:5.5"
     APP: 'WordPress'
@@ -434,4 +434,3 @@ deploy:branches:5.5:
       VERSION: "5.5"
       VARIANT: ""
     script: *deploy_branches_script_definition
-
