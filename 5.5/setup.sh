@@ -78,7 +78,7 @@ define('BST_SMTP_USER_NAME', '${SMTP_USER_NAME}');
 define('BST_SMTP_PASSWORD', '${SMTP_PASSWORD}');
 define('BST_SMTP_FROM', '${SMTP_FROM}');
 define('BST_SMTP_FROM_NAME', '${SMTP_FROM_NAME}');
-define('BST_SMTP_SENDER', '${SMTP_SENDER}');      
+define('BST_SMTP_SENDER', '${SMTP_SENDER}');
 
 define('AUTOMATIC_UPDATER_DISABLED', ${AUTOMATIC_UPDATER_DISABLED});
 define('DISABLE_WP_CRON', ${DISABLE_WP_CRON});
@@ -101,38 +101,38 @@ PHP
   #su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' theme update --all" www-data
 
   # WordPress Plugins
-  su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install wpdirauth" www-data
-  su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install shortcodes-ultimate" www-data
-  su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install auto-submenu" www-data
+  # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install wpdirauth" www-data
+  # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install shortcodes-ultimate" www-data
+  # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install auto-submenu" www-data
   # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install qtranslate-x" www-data
-  su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install svg-support" www-data
-  su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install wp-user-avatar" www-data
-  su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install akismet" www-data
+  # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install svg-support" www-data
+  # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install wp-user-avatar" www-data
+  # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install akismet" www-data
   # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin install stops-core-theme-and-plugin-updates" www-data
 
-  su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate wpdirauth --network" www-data
-  su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate shortcodes-ultimate --network" www-data
-  su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate akismet --network" www-data
+  # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate wpdirauth --network" www-data
+  # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate shortcodes-ultimate --network" www-data
+  # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate akismet --network" www-data
   # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate stops-core-theme-and-plugin-updates --network" www-data
 
-  su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin delete hello" www-data
-  su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin delete easy-wp-smtp" www-data
+  # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin delete hello" www-data
+  # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin delete easy-wp-smtp" www-data
 
   #su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin delete akismet" www-data
 
-  if [ -d "/var/www/html/${RELATIVE_PATH}/wp-content/plugins/tuhh-filter/.git" ]; then
-    git -C "/var/www/html/${RELATIVE_PATH}/wp-content/plugins/tuhh-filter/" pull
-  else
-    git clone https://collaborating.tuhh.de/open-source/wordpress-plugins/tuhh-filter.git "/var/www/html/${RELATIVE_PATH}/wp-content/plugins/tuhh-filter/"
-  fi
+  # if [ -d "/var/www/html/${RELATIVE_PATH}/wp-content/plugins/tuhh-filter/.git" ]; then
+  #   git -C "/var/www/html/${RELATIVE_PATH}/wp-content/plugins/tuhh-filter/" pull
+  # else
+  #   git clone https://collaborating.tuhh.de/open-source/wordpress-plugins/tuhh-filter.git "/var/www/html/${RELATIVE_PATH}/wp-content/plugins/tuhh-filter/"
+  # fi
   # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate tuhh-filter --network" www-data
 
-  if [ -d "/var/www/html/${RELATIVE_PATH}/wp-content/plugins/bst-smtp/.git" ]; then
-    git -C "/var/www/html/${RELATIVE_PATH}/wp-content/plugins/bst-smtp/" pull
-  else
-    git clone https://collaborating.tuhh.de/open-source/wordpress-plugins/bst-smtp.git "/var/www/html/${RELATIVE_PATH}/wp-content/plugins/bst-smtp/"
-  fi
-  su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate bst-smtp --network" www-data
+  # if [ -d "/var/www/html/${RELATIVE_PATH}/wp-content/plugins/bst-smtp/.git" ]; then
+  #   git -C "/var/www/html/${RELATIVE_PATH}/wp-content/plugins/bst-smtp/" pull
+  # else
+  #   git clone https://collaborating.tuhh.de/open-source/wordpress-plugins/bst-smtp.git "/var/www/html/${RELATIVE_PATH}/wp-content/plugins/bst-smtp/"
+  # fi
+  # su -s /bin/bash -c "/usr/local/bin/wp --path='/var/www/html/${RELATIVE_PATH}' plugin activate bst-smtp --network" www-data
 
   # echo "!!!! quick'n'dirty hack !!!!"
   # echo "Logout für LDAP auf 24 Stunden"
