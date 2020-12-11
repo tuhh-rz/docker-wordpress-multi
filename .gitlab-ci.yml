@@ -385,7 +385,10 @@ build:5.5:
     stage: build
     retry: 2
     only:
-      - master
+      refs:
+        - master
+      changes:
+        - ./5.5/**
     tags:
       - build
     variables:
@@ -410,7 +413,10 @@ build:branches:5.5:
     stage: build
     retry: 2
     only:
-      - branches
+      refs:
+        - branches
+      changes:
+        - ./5.5/**
     except:
       - master
     tags:
