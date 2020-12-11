@@ -1,3 +1,4 @@
+ARG VERSION=${VERSION}
 FROM docker.rz.tu-harburg.de/rzt/images/wordpress-base:${VERSION}
 
 COPY ./setup.sh /opt/setup.sh
