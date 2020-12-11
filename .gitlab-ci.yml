@@ -403,7 +403,10 @@ deploy:5.5:
     tags:
       - deploy
     only:
-      - master
+      refs:
+        - master
+      changes:
+        - ./5.5/**
     variables:
       VERSION: "5.5"
       VARIANT: ""
@@ -433,7 +436,10 @@ deploy:branches:5.5:
     tags:
       - deploy
     only:
-      - branches
+      refs:
+        - branches
+      changes:
+        - ./5.5/**
     except:
       - master
     variables:
