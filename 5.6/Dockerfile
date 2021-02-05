@@ -1,5 +1,4 @@
-ARG VERSION=${VERSION}
-FROM docker.rz.tu-harburg.de/rzt/images/wordpress-base:${VERSION}
+FROM docker.rz.tu-harburg.de/rzt/images/wordpress-base:5.6
 
 COPY ./setup.sh /opt/setup.sh
 RUN chmod +x /opt/setup.sh
