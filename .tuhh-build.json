@@ -39,6 +39,9 @@
         },
         "5.6": {
           "action": "build"
+        },
+        "5.7": {
+          "action": "build"
         }
     },
     "upgrade-check": {
